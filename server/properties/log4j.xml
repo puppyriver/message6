@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration>
+
+    <appender name="DEFAULT" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" 				value="smas_web.log"/>
+        <param name="MaxFileSize" 		value="100048KB"/>
+        <param name="MaxBackupIndex" 	value="20"/>
+        <param name="Append" 			value="true"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy/MM/dd HH:mm:ss.SSS} [%t] %-5p %c{1} - %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="ERROR" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" 				value="smas_error.log"/>
+        <param name="MaxFileSize" 		value="100048KB"/>
+        <param name="MaxBackupIndex" 	value="20"/>
+        <param name="Append" 			value="true"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy/MM/dd HH:mm:ss.SSS} [%t] %-5p %c{1} - %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="ERROR" />
+            <param name="LevelMax" value="ERROR" />
+        </filter>
+    </appender>
+    <!--<appender name="HISTORY" class="org.apache.log4j.DailyRollingFileAppender">-->
+        <!--<param name="File" 				value="/var/opt/oss/log/NSN-cmcc_convnbi_fc/"/>-->
+        <!--&lt;!&ndash;<param name="MaxFileSize" 		value="2048KB"/>&ndash;&gt;-->
+        <!--<param name="MaxBackupIndex" 	value="7"/>-->
+        <!--<param name="Append" 			value="true"/>-->
+        <!--<layout class="org.apache.log4j.PatternLayout">-->
+            <!--<param name="ConversionPattern" value="%d{HH:mm:ss.SSS}"/>-->
+        <!--</layout>-->
+    <!--</appender>-->
+     <appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+        <!--<param name="DatePattern" 		value="'.'yyyy-MM-dd"/>-->
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="ERROR" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" 				value="error.log"/>
+        <param name="MaxFileSize" 		value="10048KB"/>
+        <param name="MaxBackupIndex" 	value="20"/>
+        <param name="Append" 			value="true"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy/MM/dd HH:mm:ss.SSS} [%t] %-5p %c{1} - %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="ERROR" />
+            <param name="LevelMax" value="ERROR" />
+        </filter>
+    </appender>
+
+    <!--<logger name="com.nokia" additivity="false">-->
+        <!--<level value="ERROR" />-->
+        <!--<appender-ref ref="ERROR" />-->
+    <!--</logger>-->
+
+    <!--<logger name="com" additivity="true">-->
+        <!--<level value="INFO" />-->
+        <!--<appender-ref ref="DEFAULT" />-->
+    <!--</logger>-->
+
+     <root>
+        <priority value="INFO"/>
+         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="DEFAULT"/>
+         <appender-ref ref="ERROR"/>
+    </root>
+
+</log4j:configuration>

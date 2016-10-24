@@ -1,5 +1,4 @@
 import React from 'react';
-import Commons from '../common/common.jsx'
 import { Button,Glyphicon,Panel,Grid,Row,Col,Modal} from 'react-bootstrap'
 export default class Template extends React.Component {
     static defaultProps = {

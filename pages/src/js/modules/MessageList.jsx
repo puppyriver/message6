@@ -1,7 +1,7 @@
 import React from 'react';
-import Commons from '../common/common.jsx'
 import MessageEditor from './MessageEditor.jsx'
-import {ListGroup,ListGroupItem, Button,Glyphicon,Panel,Grid,Row,Col,Modal} from 'react-bootstrap'
+//import SimpleMessageEditor from './SimpleMessageEditor.jsx'
+import {  Button,Glyphicon,Panel,Grid,Row,Col,Modal} from 'react-bootstrap'
 export default class MessageList extends React.Component {
     static defaultProps = {
         customerid : null
@@ -45,7 +45,7 @@ export default class MessageList extends React.Component {
                     });
                 }.bind(this)
              } />
-             <ListGroup>
+             <div>
 
                  {
                      this.state.messageList.map(function(row,idx){
@@ -68,7 +68,7 @@ export default class MessageList extends React.Component {
                                }
                              /> </span>:
 
-                             <ListGroupItem style={{marginTop : 10}}  bsStyle="info" onDoubleClick={function(){
+                             <div style={{marginTop : 10}}  bsStyle="info" onDoubleClick={function(){
                                    row.edit = true;
                                    if (this.state.currentMessage)
                                         this.state.currentMessage.edit = false;
@@ -81,13 +81,13 @@ export default class MessageList extends React.Component {
                                      />
                                      {row.time && new Date(row.time).toLocaleString()}
                                  </div>
-                             </ListGroupItem>)
+                             </div>)
 
 
 
                      }.bind(this))
                  }
-             </ListGroup>
+             </div>
         </span>);
     }
 

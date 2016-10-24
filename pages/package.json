@@ -33,7 +33,7 @@
     "webpack-dev-server": "^1.12.1"
   },
   "scripts": {
-    "webpack": "webpack",
-    "start": "webpack-dev-server --port 9090 --hot --inline"
+    "webpack": "webpack --config webpack.min.js",
+    "start": "webpack-dev-server --port 6060 --hot --inline"
   }
 }

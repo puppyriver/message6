@@ -1,11 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import Commons from '../common/common.jsx'
 import { Button,Glyphicon,Panel,Grid,Row,Col,Modal} from 'react-bootstrap'
 import {Editor, EditorState,ContentState,RichUtils} from 'draft-js';
-import 'draft-js/dist/Draft.css'
-//import '../../lib/css/Draft.css'
-import '../../css/RichEditor.css'
+//import 'draft-js/dist/Draft.css'
+//import '../../css/RichEditor.css'
 
 
 export default class MessageEditor extends React.Component {

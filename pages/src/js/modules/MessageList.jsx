@@ -1,7 +1,7 @@
 import React from 'react';
 import MessageEditor from './MessageEditor.jsx'
 //import SimpleMessageEditor from './SimpleMessageEditor.jsx'
-import {  Button,Glyphicon,Panel,Grid,Row,Col,Modal,ListGroup,ListGroupItem,ButtonToolbar,Pagination} from 'react-bootstrap'
+import {  Button,Glyphicon,Panel,Grid,Row,Col,Pager,Modal,ListGroup,FormControl,ListGroupItem,ButtonToolbar,Pagination} from 'react-bootstrap'
 import ToggleButton from '../component/ToggleButton.jsx'
 export default class MessageList extends React.Component {
     static defaultProps = {
@@ -70,22 +70,29 @@ export default class MessageList extends React.Component {
              } />
 
                  <ButtonToolbar  style={{marginTop : 10}}>
-                     <Pagination style={{display : 'inline'}}
-                                 prev
-                         next
-                         first
-                         last
-                         ellipsis
-                         boundaryLinks
-                         items={ Math.ceil(this.state.total / this.state.pageSize)}
-                         maxButtons={3}
-                         activePage={this.state.page}
-                         onSelect={this.handleSelect2} >
+                     {/*<Pagination style={{display : 'inline'}}*/}
+                                 {/*prev*/}
+                         {/*next*/}
+                         {/*first*/}
+                         {/*last*/}
+                         {/*ellipsis*/}
+                         {/*boundaryLinks*/}
+                         {/*items={ Math.ceil(this.state.total / this.state.pageSize)}*/}
+                         {/*maxButtons={3}*/}
+                         {/*activePage={this.state.page}*/}
+                         {/*onSelect={this.handleSelect2} >*/}
 
-                     </Pagination>
-                     <span style={{"font-size": "14px"}}>
-                     Total : 1000
-                         </span>
+                     {/*</Pagination>*/}
+
+                     {/*<span style={{"font-size": "14px"}}>*/}
+                     {/*Total : 1000*/}
+                         {/*</span>*/}
+
+                      <Pager  style={{display : 'inline-block', marginTop : 0}}>
+                        <Pager.Item previous href="#">&larr; Previous Page</Pager.Item>
+                          <FormControl  style={{display : 'inline-block', marginTop : 0,width : 40}} type="input" value={1}></FormControl>
+                        <Pager.Item next href="#">Next Page &rarr;</Pager.Item>
+                      </Pager>
                      <div className="columns columns-right btn-group pull-right">
 
                          <Button onClick={

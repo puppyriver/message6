@@ -22,8 +22,39 @@ public class XMessage implements Serializable {
     private Integer type;
     private Integer status;
     private Integer mode;
+    private Integer level;
     private String source;
     private String uri;
+
+    private String category;
+
+    private Long parentId;
+
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
 
     public XMessage() {
     }

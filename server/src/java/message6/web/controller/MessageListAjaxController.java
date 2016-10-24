@@ -1,5 +1,6 @@
 package message6.web.controller;
 
+import message6.web.common.QueryResult;
 import message6.web.model.XMessage;
 import message6.web.util.IdentityUtil;
 import message6.web.util.JdbcTemplateUtil;
@@ -16,9 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Author: Ronnie.Chen
@@ -49,13 +48,62 @@ public class MessageListAjaxController extends AbstractAjaxController{
         } catch (Exception e) {
             logger.error(e.getMessage(),e);
         }
+
+        executeTolerableSql("alter table xmessage add parentid bigint");
+        executeTolerableSql("alter table xmessage add level integer");
+
     }
+
+    private void executeTolerableSql(String sql) {
+        try {
+            jdbcTemplate.execute(sql);
+        } catch (DataAccessException e){
+            logger.error("Failed to create table : XMessage "+e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
+        }
+
+    }
+
+
+
     @RequestMapping(value="all")
     public @ResponseBody
-    List<XMessage> queryAll(HttpServletRequest request, HttpServletResponse response) throws Throwable {
-        List list = JdbcTemplateUtil.queryForList(jdbcTemplate, XMessage.class, "select * from XMessage order by status desc, id desc limit 0,100");
-        return list;
+    QueryResult queryAll(HttpServletRequest request, HttpServletResponse response) throws Throwable {
+        String category = request.getParameter("category");
+        Integer pageSzie =  extractInt(request,"pageSize");
+        Integer currentPage = extractInt(request,"currentPage");
+        String whereSql = "where parentid is null "+(category == null ? "":" and category = '"+category+"'")+" order by status desc, id desc";
+        Map<String, Object> map = jdbcTemplate.queryForMap("select count(*) from XMessage " + whereSql);
+        Object next = map.values().iterator().next();
+        int count = ((Number) next).intValue();
+        List list = JdbcTemplateUtil.queryForList(jdbcTemplate, XMessage.class, "select * from XMessage "+whereSql+((pageSzie != null && currentPage != null) ? " limit "+pageSzie*(currentPage-1)+","+pageSzie :""));
+        return new QueryResult(count,10,currentPage,list);
     }
+
+    @RequestMapping(value="sub")
+    public @ResponseBody
+    List querySub(HttpServletRequest request, HttpServletResponse response) throws Throwable {
+        Long parentId = extractLong(request,"parentId");
+        if (parentId != null) {
+            return JdbcTemplateUtil.queryForList(jdbcTemplate,XMessage.class,"select * from xmessage where parentid = "+parentId);
+        }
+        return new ArrayList();
+    }
+
+    @RequestMapping(value="queryCategory")
+    public @ResponseBody
+    List queryCategory(HttpServletRequest request, HttpServletResponse response) throws Throwable {
+        List<Map<String, Object>> maps = jdbcTemplate.queryForList("select distinct category from xmessage");
+        List<String> categorys = new ArrayList<>();
+        for (Map<String, Object> map : maps) {
+
+            categorys.add((String)map.values().toArray()[0]);
+        }
+        return categorys;
+    }
+
+
 
 
     @RequestMapping(value="delete")

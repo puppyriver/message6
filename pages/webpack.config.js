@@ -13,9 +13,9 @@ module.exports = {
 
     //entry: path.resolve(dir_js, 'test.jsx'),
     entry : {
-        "app" :  [path.resolve(dir_js, 'app2.jsx')]
-       //"customer" : [path.resolve(dir_js, 'customer.jsx')],
-       // "users" :[path.resolve(dir_js, 'users.jsx')]
+        "app" :  [path.resolve(dir_js, 'app.jsx')]
+        //"customer" : [path.resolve(dir_js, 'customer.jsx')],
+        // "users" :[path.resolve(dir_js, 'users.jsx')]
     },
 
     //entry: [
@@ -68,9 +68,6 @@ module.exports = {
             { from: dir_html } // to: output.path
         ]),
         // Avoid publishing files when compilation fails
-        new webpack.NoErrorsPlugin(),
-        new webpack.HotModuleReplacementPlugin(),
-        new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.DefinePlugin({
             "process.env": {
                 NODE_ENV: JSON.stringify("production")
@@ -83,10 +80,17 @@ module.exports = {
         colors: true
     },
     cache: true,
-    // Create Sourcemaps for the bundle
-    //devtool : ['eval']
-     devtool : ['cheap-module-source-map']
-   // devtool: 'source-map',
+
+    externals: {
+        'react': 'React',
+        'react-dom': 'ReactDOM',
+        'draft-js': 'Draft',
+        'react-bootstrap': 'ReactBootstrap'
+    },
+// Create Sourcemaps for the bundle
+//devtool : ['eval']
+//  devtool : ['cheap-module-source-map']
+ devtool: 'source-map',
 };
 
 

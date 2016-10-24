@@ -29,7 +29,7 @@
     "koa-static": "^2.0.0",
     "react-hot-loader": "^1.3.0",
     "style-loader": "^0.13.1",
-    "webpack": "^1.12.6",
+    "webpack": "^1.13.2",
     "webpack-dev-server": "^1.12.1"
   },
   "scripts": {

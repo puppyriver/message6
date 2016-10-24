@@ -53,7 +53,7 @@ public class MessageListAjaxController extends AbstractAjaxController{
     @RequestMapping(value="all")
     public @ResponseBody
     List<XMessage> queryAll(HttpServletRequest request, HttpServletResponse response) throws Throwable {
-        List list = JdbcTemplateUtil.queryForList(jdbcTemplate, XMessage.class, "select * from XMessage order by id desc");
+        List list = JdbcTemplateUtil.queryForList(jdbcTemplate, XMessage.class, "select * from XMessage order by status desc, id desc limit 0,100");
         return list;
     }
 
@@ -73,13 +73,17 @@ public class MessageListAjaxController extends AbstractAjaxController{
      XMessage save(HttpServletRequest request, HttpServletResponse response) throws Throwable {
         try {
             Long id = extractLong(request, "id");
+            Integer status = extractInt(request,"status");
             String content = request.getParameter("content");
             XMessage message = null;
             if (id != null && id > -1) {
                 message = (XMessage)JdbcTemplateUtil.queryForObjectById(jdbcTemplate, XMessage.class, id);
                 if (message != null) {
-                    message.setContent(content);
+                    if (content != null)
+                        message.setContent(content);
                     message.setTime(new Date());
+                    if (status != null)
+                        message.setStatus(status);
                 }
             } else
                 message = new XMessage(IdentityUtil.getId(dataSource.getConnection(),"XMessage"),content);

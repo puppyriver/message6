@@ -95,6 +95,7 @@ export default class MessageEditor extends React.Component {
     }
 
     render() {
+
         console.log("render");
         const {editorState} = this.state;
 

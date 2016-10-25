@@ -51,6 +51,7 @@ public class MessageListAjaxController extends AbstractAjaxController{
 
         executeTolerableSql("alter table xmessage add parentid bigint");
         executeTolerableSql("alter table xmessage add level integer");
+        executeTolerableSql("alter table xmessage add category varchar");
 
     }
 

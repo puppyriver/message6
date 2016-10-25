@@ -68,6 +68,11 @@ module.exports = {
             { from: dir_html } // to: output.path
         ]),
         // Avoid publishing files when compilation fails
+
+        new webpack.NoErrorsPlugin(),
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.optimize.OccurenceOrderPlugin(),
+
         new webpack.DefinePlugin({
             "process.env": {
                 NODE_ENV: JSON.stringify("production")

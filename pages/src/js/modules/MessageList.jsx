@@ -13,7 +13,9 @@ export default class MessageList extends React.Component {
             {content : '12312213',edit : false},{content : 'asdfasdfd',edit : false}],
 
 
-        currentMessage : null
+        currentMessage : null,
+        currentPage : 1,
+        pageSize : 5
     };
 
     componentWillMount() {
@@ -29,12 +31,16 @@ export default class MessageList extends React.Component {
         });
     };
 
-    refresh =()=>{
-        $.post("ajax/list/all",{},
+
+
+    refresh =(page=this.state.currentPage)=>{
+        $.post("ajax/list/all",{ pageSize : this.state.pageSize, currentPage : page},
             function(result) {
 
                 this.setState({
-                    messageList : result
+                    messageList : result.data,
+                    currentPage : result.currentPage,
+                    total : result.total
                 });
             }.bind(this));
    }
@@ -46,15 +52,106 @@ export default class MessageList extends React.Component {
             }.bind(this));
     };
 
-    render = ()=> {
-        function getTitle(txt) {
-            if (txt.indexOf('\n') > 0) {
-                txt = txt.substr(0,txt.indexOf('\n'));
-            }
+
+    renderMessageList =(messageList) => {
+    //    if (messageList.map)
+         return messageList.map(function(row,idx){
+            return (row.edit ?
 
 
-            return txt.substr(0,txt.length > 50 ? 50 : txt.length);
+                <div  style={{marginTop : 0}}  >
+
+                    <MessageEditor message={row}
+                                   ref={function(messageEditor){
+                                    if (messageEditor)
+                                        messageEditor.focus();
+                                }}
+
+                                   onMessageSave={
+                                    function(message) {
+                                        this.state.messageList[idx] = message;
+                                        this.setState({
+                                            messageList : this.state.messageList
+                                        });
+                                    }.bind(this)
+                               }
+                    /> </div>:
+
+                <ListGroupItem style={{marginTop : 10,wordBreak:"break-all",wordWrap:"break-word"}}  bsStyle="info">
+
+                    <Glyphicon  style={{cursor : 'pointer', marginRight : '10px'}}  glyph="pencil"
+                                onClick={function(){
+                                       row.edit = true;
+                                       if (this.state.currentMessage)
+                                            this.state.currentMessage.edit = false;
+                                       this.setState({messageList:this.state.messageList,currentMessage : row});
+                                    }.bind(this)}
+                    />
+
+                    {
+                        row.expand ?
+                            <pre style={{display : 'inline-block'}}>
+                                {row.content}
+                                { (row.attributes.children) && this.renderMessageList(row.attributes.children) }
+                            </pre> :
+
+                            this.getTitle(row.content)
+                    }
+
+                    <div className="pull-right">
+                        <span style={{marginRight:'10px'}}>{row.time && new Date(row.time).toLocaleString()}</span>
+                        <ToggleButton bol={!row.expand} onClick= {
+                                         function() {
+                                                row.expand = !row.expand;
+                                             this.setState({messageList : this.state.messageList});
+                                         }.bind(this)}>
+                            <Glyphicon  style={{cursor : 'pointer', marginRight : '10px'}}  bol={false} glyph="minus" />
+                            <Glyphicon  style={{cursor : 'pointer', marginRight : '10px'}}  bol={true} glyph="plus" />
+                        </ToggleButton>
+                        <Glyphicon  style={{cursor : 'pointer', marginRight : '10px'}} glyph="trash"
+                                    onClick={(this.rowClickDelete).bind(this,row)}
+                        />
+
+                        <ToggleButton bol={!(row.status == 1)} onClick= {
+                                         function() {
+                                                        var ns = row.status == 1 ? 0 : 1;
+                                                        $.post("ajax/list/save",
+                                                        {
+                                                            id : row.id,status : ns
+                                                        },
+                                                        function(result) {
+                                                            row.status = ns;
+                                                            this.setState({messageList : this.state.messageList})
+                                                            //this.setState({
+                                                            //    roleOptions : result
+                                                            //});
+                                                        }.bind(this));
+
+                                         }.bind(this)}>
+                            <Glyphicon  style={{cursor : 'pointer', marginRight : '10px'}}  bol={false} glyph="star" />
+                            <Glyphicon  style={{cursor : 'pointer', marginRight : '10px'}}  bol={true} glyph="star-empty" />
+                        </ToggleButton>
+
+                    </div>
+                </ListGroupItem>)
+
+
+
+        }.bind(this))
+
+    }
+
+    getTitle =(txt)=> {
+        if (txt.indexOf('\n') > 0) {
+            txt = txt.substr(0,txt.indexOf('\n'));
         }
+
+
+        return txt.substr(0,txt.length > 50 ? 50 : txt.length);
+    }
+
+    render = ()=> {
+
         return (<span>
 
 
@@ -89,9 +186,21 @@ export default class MessageList extends React.Component {
                          {/*</span>*/}
 
                       <Pager  style={{display : 'inline-block', marginTop : 0}}>
-                        <Pager.Item previous href="#">&larr; Previous Page</Pager.Item>
-                          <FormControl  style={{display : 'inline-block', marginTop : 0,width : 40}} type="input" value={1}></FormControl>
-                        <Pager.Item next href="#">Next Page &rarr;</Pager.Item>
+                        <Pager.Item previous onClick={this.state.currentPage > 1 ? this.refresh.bind(this,this.state.currentPage-1) : null}>&larr; Previous Page</Pager.Item>
+                          <span style={{"font-size": "14px",paddingLeft : 20}}> Page :  </span>
+                          <FormControl  style={{display : 'inline-block', marginTop : 0,width : 40}} type="input" value={this.state.currentPage}
+                                        onChange={function(e){
+                                            var page = parseInt(e.target.value);
+                                            if (page > 0) {
+                                                this.state.currentPage = page;
+                                                this.refresh();
+                                            }
+
+                                        }.bind(this)}>
+
+                          </FormControl>
+                          <span style={{"font-size": "14px",paddingRight : 20}}> / { Math.ceil((this.state.total / this.state.pageSize))} , Total {this.state.total} Messages </span>
+                        <Pager.Item next  onClick={this.state.currentPage < Math.ceil(this.state.total / this.state.pageSize) ? this.refresh.bind(this,this.state.currentPage+1) : null}>Next Page &rarr;</Pager.Item>
                       </Pager>
                      <div className="columns columns-right btn-group pull-right">
 
@@ -140,88 +249,7 @@ export default class MessageList extends React.Component {
                  </ButtonToolbar>
 
                  {
-                     this.state.messageList.map(function(row,idx){
-                         return (row.edit ?
-
-
-                             <div  style={{marginTop : 10}}  >
-
-                                 <MessageEditor message={row}
-                                ref={function(messageEditor){
-                                    if (messageEditor)
-                                        messageEditor.focus();
-                                }}
-
-                               onMessageSave={
-                                    function(message) {
-                                        this.state.messageList[idx] = message;
-                                        this.setState({
-                                            messageList : this.state.messageList
-                                        });
-                                    }.bind(this)
-                               }
-                             /> </div>:
-
-                             <ListGroupItem style={{marginTop : 10,wordBreak:"break-all",wordWrap:"break-word"}}  bsStyle="info">
-
-                                 <Glyphicon  style={{cursor : 'pointer', marginRight : '10px'}}  glyph="pencil"
-                                     onClick={function(){
-                                       row.edit = true;
-                                       if (this.state.currentMessage)
-                                            this.state.currentMessage.edit = false;
-                                       this.setState({messageList:this.state.messageList,currentMessage : row});
-                                    }.bind(this)}
-                                 />
-
-                                 {
-                                     row.expand ?
-                                         <pre style={{display : 'inline-block'}}>
-                                            {row.content}
-                                        </pre> :
-
-                                         getTitle(row.content)
-                                 }
-
-                                 <div className="pull-right">
-                                     <span style={{marginRight:'10px'}}>{row.time && new Date(row.time).toLocaleString()}</span>
-                                     <ToggleButton bol={!row.expand} onClick= {
-                                         function() {
-                                                row.expand = !row.expand;
-                                             this.setState({messageList : this.state.messageList});
-                                         }.bind(this)}>
-                                           <Glyphicon  style={{cursor : 'pointer', marginRight : '10px'}}  bol={false} glyph="minus" />
-                                           <Glyphicon  style={{cursor : 'pointer', marginRight : '10px'}}  bol={true} glyph="plus" />
-                                     </ToggleButton>
-                                     <Glyphicon  style={{cursor : 'pointer', marginRight : '10px'}} glyph="trash"
-                                                 onClick={(this.rowClickDelete).bind(this,row)}
-                                     />
-
-                                     <ToggleButton bol={!(row.status == 1)} onClick= {
-                                         function() {
-                                                        var ns = row.status == 1 ? 0 : 1;
-                                                        $.post("ajax/list/save",
-                                                        {
-                                                            id : row.id,status : ns
-                                                        },
-                                                        function(result) {
-                                                            row.status = ns;
-                                                            this.setState({messageList : this.state.messageList})
-                                                            //this.setState({
-                                                            //    roleOptions : result
-                                                            //});
-                                                        }.bind(this));
-
-                                         }.bind(this)}>
-                                         <Glyphicon  style={{cursor : 'pointer', marginRight : '10px'}}  bol={false} glyph="star" />
-                                         <Glyphicon  style={{cursor : 'pointer', marginRight : '10px'}}  bol={true} glyph="star-empty" />
-                                     </ToggleButton>
-
-                                 </div>
-                             </ListGroupItem>)
-
-
-
-                     }.bind(this))
+                     this.renderMessageList(this.state.messageList)
                  }
              </ListGroup>
         </span>);

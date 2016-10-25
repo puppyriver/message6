@@ -78,7 +78,41 @@ public class MessageListAjaxController extends AbstractAjaxController{
         Object next = map.values().iterator().next();
         int count = ((Number) next).intValue();
         List list = JdbcTemplateUtil.queryForList(jdbcTemplate, XMessage.class, "select * from XMessage "+whereSql+((pageSzie != null && currentPage != null) ? " limit "+pageSzie*(currentPage-1)+","+pageSzie :""));
+        fillChildren(list);
         return new QueryResult(count,10,currentPage,list);
+    }
+
+
+    private void fillChildren(List<XMessage> messages) throws Exception {
+        StringBuffer sb = new StringBuffer(" (");
+        int idx = 0;
+        for (XMessage message : messages) {
+            sb.append(message.getId());
+            if (++idx < messages.size())
+                sb.append(",");
+        }
+        sb.append(")");
+
+        List<XMessage> list = JdbcTemplateUtil.queryForList(jdbcTemplate, XMessage.class, "select * from xmessage where parentid in " + sb.toString());
+
+        HashMap<Long,XMessage> map = new HashMap<>();
+
+        if (list != null && list.size() > 0) {
+            for (XMessage message : messages) {
+                map.put(message.getId(), message);
+            }
+
+            for (XMessage message : list) {
+                XMessage pm = map.get(message.getParentId());
+                HashMap attributes = pm.getAttributes();
+                ArrayList children = (ArrayList) attributes.get("children");
+                if (children == null) {
+                    children = new ArrayList<>();
+                    attributes.put("children", children);
+                }
+                children.add(message);
+            }
+        }
     }
 
     @RequestMapping(value="sub")

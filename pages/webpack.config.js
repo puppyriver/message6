@@ -88,9 +88,9 @@ module.exports = {
         'react-bootstrap': 'ReactBootstrap'
     },
 // Create Sourcemaps for the bundle
-//devtool : ['eval']
-//  devtool : ['cheap-module-source-map']
- devtool: 'source-map',
+devtool : ['eval']
+// devtool : ['cheap-module-source-map']
+// devtool: 'source-map',
 };
 
 

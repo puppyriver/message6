@@ -3,8 +3,10 @@ package message6.web.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Author: Ronnie.Chen
@@ -30,6 +32,16 @@ public class XMessage implements Serializable {
 
     private Long parentId;
 
+    @Transient
+    private HashMap attributes = new HashMap();
+
+    public HashMap getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(HashMap attributes) {
+        this.attributes = attributes;
+    }
 
     public String getCategory() {
         return category;

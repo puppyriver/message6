@@ -14,41 +14,41 @@ import java.util.List;
  */
 public class QueryResult implements Serializable{
 
-    private int pageSize = 100;
-    private int currentPage = 1;
+    private Integer pageSize = 100;
+    private Integer currentPage = 1;
     private List data;
-    private int total = 0;
+    private Integer total = 0;
 
-    public int getTotal() {
+    public Integer getTotal() {
         return total;
     }
 
-    public void setTotal(int total) {
+    public void setTotal(Integer total) {
         this.total = total;
     }
 
 
 
-    public QueryResult(int total,int pageSize, int currentPage, List data) {
+    public QueryResult(Integer total,Integer pageSize, Integer currentPage, List data) {
         this.pageSize = pageSize;
         this.currentPage = currentPage;
         this.data = data;
         this.total = total;
     }
 
-    public int getPageSize() {
+    public Integer getPageSize() {
         return pageSize;
     }
 
-    public void setPageSize(int pageSize) {
+    public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
     }
 
-    public int getCurrentPage() {
+    public Integer getCurrentPage() {
         return currentPage;
     }
 
-    public void setCurrentPage(int currentPage) {
+    public void setCurrentPage(Integer currentPage) {
         this.currentPage = currentPage;
     }
 

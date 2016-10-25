@@ -16,7 +16,7 @@ task beforeBuild << {
    // println "NETHERE DIR IS :"+file(NETHERE_DIR).getAbsolutePath()
 
     exec {
-        commandLine("git","pull", "..")
+        commandLine("git","pull")
     }
     exec {
         commandLine("./wp.sh")

@@ -1,0 +1,133 @@
+import java.text.SimpleDateFormat
+
+//defaultTasks 'beforeBuild','buildFlex','buildNmsCore','buildAppServer','buildWar','afterBuild'
+//defaultTasks 'beforeBuild'
+defaultTasks 'lite'
+
+task beforeBuild << {
+    println "###################################################################"
+    println "#                                                                 #"
+    println "#                                                                 #"
+    println "#                         Message6 Build                               #"
+    println "#                                                                 #"
+    println "#                                                                 #"
+    println "###################################################################"
+
+    println "NETHERE DIR IS :"+file(NETHERE_DIR).getAbsolutePath()
+
+    exec {
+        commandLine("git","pull", "..")
+    }
+    exec {
+        commandLine("./wp.sh")
+    }
+     
+ //   killServer()
+    clearTempDirs()
+    if (file(RELEASE_DIR).exists()) {
+        if (file("$RELEASE_DIR/build.version").exists())
+            file(RELEASE_DIR).renameTo(file(RELEASE_DIR+"."+file("$RELEASE_DIR/build.version").getText()))
+        else
+            file(RELEASE_DIR).renameTo(file(RELEASE_DIR+"."+System.currentTimeMillis()))
+
+    }
+}
+
+
+
+task afterBuild << {
+
+    clearTempDirs()
+
+
+  //  copy {
+   //     from fileTree(dir : "$REPOSITORY_DIR/RAS_WEB" ,includes: ["*.war"]).getFiles()
+   //     into "$RELEASE_DIR/web/$TOMCAT/webapps"
+    // }
+    println "###################################################################"
+    println "#                                                                 #"
+    println "#                       Congratulations !!!                       #"
+    println "#                    SMAS Build Success !!!                   #"
+    println "#                                                                 #"
+    println "#                                                                 #"
+    println "###################################################################"
+}
+
+task startApp << {
+    startServer()
+}
+
+
+task buildFlex(type : GradleBuild) { //调用其他脚本
+    buildFile = 'flex.gradle'
+}
+
+task buildNmsCore(type : GradleBuild) { //调用其他脚本
+    buildFile = 'nmscore.gradle'
+}
+
+//task buildAppServer(type : GradleBuild) { //调用其他脚本
+//    buildFile = 'appserver.gradle'
+//}
+
+task buildWar(type : GradleBuild) { //调用其他脚本
+    buildFile = 'war.dev.gradle'
+    
+}
+
+task buildWarOnsite(type : GradleBuild) { //调用其他脚本
+    buildFile = 'war.onsite.gradle'
+    
+}
+task buildWarOnsiteLite(type : GradleBuild) { //调用其他脚本
+    buildFile = 'war.lite.gradle'
+    
+}
+
+task release  << {
+//    dependsOn( 'afterBuild','buildWar','buildAppServer',
+//            'buildNmsCore','buildFlex','beforeBuild')
+    beforeBuild.execute()
+    //buildFlex.execute()
+ //   buildNmsCore.execute()
+  //  buildAppServer.execute()
+ //   buildWar.ext.site = 'smcc'
+ //   println buildWar
+    buildWarOnsite.execute()
+    afterBuild.execute()
+    println "############ Building Release : "+new Date()+" ##############################"
+}
+
+task lite  << {
+    beforeBuild.execute()
+
+    buildWarOnsiteLite.execute()
+    afterBuild.execute()
+    println "############ Building Release : "+new Date()+" ##############################"
+}
+
+task dev  << {
+//    dependsOn( 'afterBuild','buildWar','buildAppServer',
+//            'buildNmsCore','buildFlex','beforeBuild')
+    beforeBuild.execute()
+    //buildFlex.execute()
+ //   buildNmsCore.execute()
+  //  buildAppServer.execute()
+ //   buildWar.ext.site = 'smcc'
+ //   println buildWar
+    buildWar.execute()
+    afterBuild.execute()
+    println "############ Building Release : "+new Date()+" ##############################"
+}
+
+ 
+
+void clearTempDirs () {
+    delete JAR_BUILD_DIR    
+    // delete RELEASE_DIR
+}
+
+ 
+
+
+

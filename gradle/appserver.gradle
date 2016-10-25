@@ -1,0 +1,80 @@
+apply plugin  : 'java'
+
+defaultTasks 'clean','build'
+
+ext.dependLibs = fileTree(dir: "$NETHERE_DIR/core/frameworks/java/lib", includes: ['**/*.jar'])
+ext.dependJars = fileTree(dir: JAR_BUILD_DIR, includes: ['**/*.jar'])
+
+task precheckAndClearRelease() {
+    println 'prechecking................................'
+    if (!file("$JAR_BUILD_DIR/nms_core.jar").exists()) {
+        throw new Exception ("[ERROR] nms_core.jar not exists in $JAR_BUILD_DIR, maybe you should execute nmscore.gradle first !")
+    }
+
+    delete "$RELEASE_DIR/appserver/properties"
+    delete "$RELEASE_DIR/appserver/resources"
+    delete "$RELEASE_DIR/appserver/lib"
+
+}
+
+build.doLast {
+    copy {
+        from "$NETHERE_DIR/project/smartodn/java/server/deploy/properties"
+        into "$RELEASE_DIR/appserver/properties"
+    }
+    copy {
+        from "$NETHERE_DIR/project/smartodn/java/server/deploy/resources"
+        into "$RELEASE_DIR/appserver/resources"
+    }
+
+    copy {
+        from fileTree(dir : "$NETHERE_DIR/project/smartodn/scripts/",includes: ["*.sh"]).getFiles()
+        into "$RELEASE_DIR/appserver/"
+    }
+
+ //   logger.error("",files("$RELEASE_DIR/appserver/resources"))
+    copy {
+        from dependLibs.getFiles()
+        into "$RELEASE_DIR/appserver/lib/ext"
+    }
+
+    copy {
+        from dependJars.getFiles()
+        into "$RELEASE_DIR/appserver/lib"
+    }
+}
+
+jar {
+    baseName = 'smartodn'
+    manifest {
+        attributes("Implementation-Title": "smartodn")
+    }
+    destinationDir = file(JAR_BUILD_DIR)
+}
+
+tasks.withType(Compile) {
+    options.encoding = "UTF-8"
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "$NETHERE_DIR/project/smartodn/java/server/src"
+        }
+        resources {
+            srcDir "$NETHERE_DIR/project/smartodn/java/server/src"
+        }
+    }
+}
+//
+//repositories {
+//    flatDir(dirs: "$NETHERE_DIR/core/frameworks/java/lib")
+//}
+
+dependencies {
+    compile dependLibs
+    compile dependJars
+
+}
+
+

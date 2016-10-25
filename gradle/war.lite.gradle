@@ -1,0 +1,90 @@
+apply plugin  : 'java'
+sourceCompatibility = 1.8  
+//targetCompatibility = 1.8	
+defaultTasks 'buildWar'
+ext.dependWebLibs = fileTree(dir: "../server/lib", includes: ['**/*.jar'])	
+ext.dependTomcatLibs = fileTree(dir: "../server/tomcat8/lib", includes: ['**/*.jar'])	
+ext.webJarName = 'message6'
+ext.webWarName = 'ROOT'
+println this
+task precheckAndClearRelease() {
+    println ':precheckAndClearRelease !!!'
+    println "$JAR_BUILD_DIR/$webJarName"+".jar"
+    //  if (!file("$JAR_BUILD_DIR/nms_core.jar").exists()) {
+    //    throw new Exception ("[ERROR] nms_core.jar not exists in $JAR_BUILD_DIR, maybe you should execute nmscore.gradle first !")
+    // }
+   // if (!file("$JAR_BUILD_DIR/ras.jar").exists()) {
+   //     throw new Exception ("[ERROR] smartodn.jar not exists in $JAR_BUILD_DIR, maybe you should execute nmscore.gradle first !")
+   // }
+
+    delete "$JAR_BUILD_DIR/$webJarName"+".jar"
+
+  //  copyOrClearTomcat()
+
+}
+
+task buildWar(type:War, dependsOn: ['build','clean'])  {
+    println ':buildWar ... '
+
+    //  copy {
+    //    from "$FLEX_BUILD_DIR/build.version"
+    //    into RELEASE_DIR
+    //}
+
+    baseName = webWarName
+    destinationDir = file("$RELEASE_DIR")
+    from fileTree("../server/webapp") // adds a file-set to the root of the archive
+ //  	from fileTree("$NETHERE_DIR/project/smccvip/code/deploy/smcc/webcontent") // adds a file-set to the root of the archive 
+ //   webInf { from "$NETHERE_DIR/project/smccvip/code/WebContent/WEB-INF" } // adds a file-set to the WEB-INF dir.
+    classpath fileTree(JAR_BUILD_DIR) // adds a file-set to the WEB-INF/lib dir.
+ //   classpath warWebLibs.getFiles() // adds a configuration to the WEB-INF/lib dir.
+    classpath file("../server/properties")
+  //  webXml = file('src/someWeb.xml') // copies a file to WEB-INF/web.xml
+}
+
+
+jar {
+    baseName = webJarName
+    manifest {
+        attributes("Implementation-Title": "java_web")
+    }
+    destinationDir = file(JAR_BUILD_DIR)
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+sourceSets {
+    main {
+        java {
+          //  srcDir "$NETHERE_DIR/project/smccvip/code/src/common"
+           	srcDirs = ["../server/src/java"]
+        }
+
+
+        resources {
+            	srcDirs = ["../server/src/resource"]
+        }
+    }
+}
+
+dependencies {
+    compile dependWebLibs
+    compile dependTomcatLibs
+    compile fileTree(JAR_BUILD_DIR)
+}
+
+
+void copyOrClearTomcat() {
+    if (file("$RELEASE_DIR/web/$TOMCAT").exists()) {
+        delete "$RELEASE_DIR/web/$TOMCAT/webapps/$webWarName"
+        delete "$RELEASE_DIR/web/$TOMCAT/webapps/$webWarName"+".war"
+    }
+    else copy {
+        from "$NETHERE_DIR/tools/$TOMCAT"
+        into "$RELEASE_DIR/web/$TOMCAT"
+    }
+}
+
+

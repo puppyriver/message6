@@ -77,7 +77,13 @@ export default class MessageList extends React.Component {
                                }
                     /> </div>:
 
-                <ListGroupItem style={{marginTop : 10,wordBreak:"break-all",wordWrap:"break-word"}}  bsStyle="info">
+                <ListGroupItem style={{marginTop : 10,wordBreak:"break-all",wordWrap:"break-word"}}  bsStyle="info"
+                    onDoubleClick={function(e){
+                        row.expand = !row.expand;
+                        this.setState({messageList : this.state.messageList});
+                    }}
+
+                >
 
                     <Glyphicon  style={{cursor : 'pointer', marginRight : '10px'}}  glyph="pencil"
                                 onClick={function(){

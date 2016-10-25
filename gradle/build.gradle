@@ -13,7 +13,7 @@ task beforeBuild << {
     println "#                                                                 #"
     println "###################################################################"
 
-    println "NETHERE DIR IS :"+file(NETHERE_DIR).getAbsolutePath()
+   // println "NETHERE DIR IS :"+file(NETHERE_DIR).getAbsolutePath()
 
     exec {
         commandLine("git","pull", "..")

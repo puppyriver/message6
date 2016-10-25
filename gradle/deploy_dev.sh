@@ -1,4 +1,4 @@
-cd /home/app/apache-tomcat-8.0.0-RC5/bin
+cd /home/app/apache-tomcat-8.0.24/bin
 ./kill.sh
 echo 'TOMCAT KILLED'
 
@@ -9,7 +9,7 @@ rm -Rf ../webapps/ROOT*
 
 echo 'OLD VERSION REMOVED'
 
-cp ./message6_build/ROOT.war /home/app/apache-tomcat-8.0.0-RC5/webapps
+cp ./message6_build/ROOT.war /home/app/apache-tomcat-8.0.24/webapps
 
 echo 'NEW VERSION INSTALLED'
 echo 'STARTING...'

@@ -81,7 +81,7 @@ export default class MessageList extends React.Component {
                     onDoubleClick={function(e){
                         row.expand = !row.expand;
                         this.setState({messageList : this.state.messageList});
-                    }}
+                    }.bind(this)}
 
                 >
 

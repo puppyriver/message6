@@ -147,6 +147,12 @@ export default class MessageList extends React.Component {
 
     }
 
+
+    import = ()=> {
+
+    }
+
+
     getTitle =(txt)=> {
         if (txt.indexOf('\n') > 0) {
             txt = txt.substr(0,txt.indexOf('\n'));
@@ -233,6 +239,9 @@ export default class MessageList extends React.Component {
                                  <Button bol={true}> <Glyphicon glyph="plus"/></Button>
                              </ToggleButton>
                          }
+
+                         <Button onClick={this.import}><Glyphicon glyph="import" /></Button>
+
                      </div>
                      <div className="pull-right search">
                          <input className="form-control" type="text"
